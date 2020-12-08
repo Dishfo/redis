@@ -12,6 +12,7 @@ import (
 
 // Nil reply returned by Redis when key does not exist.
 const Nil = proto.Nil
+const ErrSkip = proto.RedisError("redis_lib: skip this ")
 
 func SetLogger(logger internal.Logging) {
 	internal.Logger = logger
@@ -64,6 +65,12 @@ func (hs hooks) process(
 
 	if retErr == nil {
 		retErr = fn(ctx, cmd)
+	}
+
+	//todo specific error represent skip real action
+	if retErr == ErrSkip {
+		cmd.SetErr(nil)
+		retErr = nil
 	}
 
 	for hookIndex--; hookIndex >= 0; hookIndex-- {

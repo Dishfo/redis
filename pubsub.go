@@ -476,7 +476,8 @@ func (c *PubSub) getContext() context.Context {
 }
 
 func (c *PubSub) initPing() {
-	ctx := context.TODO()
+
+	ctx := setListenCtxFlag(context.TODO())
 	c.ping = make(chan struct{}, 1)
 	go func() {
 		timer := time.NewTimer(time.Minute)
@@ -541,7 +542,6 @@ func (c *PubSub) initMsgChan(size int) {
 			case c.ping <- struct{}{}:
 			default:
 			}
-
 			switch msg := msg.(type) {
 			case *Subscription:
 				// Ignore.
@@ -549,6 +549,7 @@ func (c *PubSub) initMsgChan(size int) {
 				// Ignore.
 			case *Message:
 				timer.Reset(chanSendTimeout)
+				//fmt.Println(len(c.msgCh))
 				select {
 				case c.msgCh <- msg:
 					if !timer.Stop() {

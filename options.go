@@ -109,6 +109,8 @@ type Options struct {
 
 	// Limiter interface used to implemented circuit breaker or rate limiter.
 	Limiter Limiter
+
+	ClientSideOptions *ClientSideOptions
 }
 
 func (opt *Options) init() {
